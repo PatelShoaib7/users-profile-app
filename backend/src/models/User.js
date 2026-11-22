@@ -93,12 +93,42 @@ const monthlyTargetSubSchema = new mongoose.Schema(
     unit: { type: String, trim: true, maxlength: 30, default: 'items' },
     status: {
       type: String,
-      enum: ['on_track', 'at_risk', 'achieved'],
-      default: 'on_track',
+      enum: ['not_started', 'in_progress', 'on_track', 'at_risk', 'achieved'],
+      default: 'not_started',
     },
     notes: { type: String, trim: true, maxlength: 300, default: '' },
   },
   { timestamps: true }
+);
+
+const attendanceLogSubSchema = new mongoose.Schema(
+  {
+    date: { type: Date, required: true },
+    checkIn: { type: String, trim: true, default: '09:05 AM' },
+    checkOut: { type: String, trim: true, default: '06:15 PM' },
+    status: {
+      type: String,
+      enum: ['present', 'late', 'absent', 'leave'],
+      default: 'present',
+    },
+    lateByMinutes: { type: Number, min: 0, default: 0 },
+    remark: { type: String, trim: true, maxlength: 200, default: '' },
+  },
+  { _id: true }
+);
+
+const attendanceSummarySubSchema = new mongoose.Schema(
+  {
+    month: { type: String, trim: true, default: 'November 2026' },
+    workingDays: { type: Number, min: 0, default: 22 },
+    presentDays: { type: Number, min: 0, default: 20 },
+    absentDays: { type: Number, min: 0, default: 0 },
+    leaveDays: { type: Number, min: 0, default: 2 },
+    lateMarks: { type: Number, min: 0, default: 0 },
+    avgCheckInTime: { type: String, trim: true, default: '09:10 AM' },
+    logs: { type: [attendanceLogSubSchema], default: [] },
+  },
+  { _id: false }
 );
 
 const userSchema = new mongoose.Schema(
@@ -194,6 +224,15 @@ const userSchema = new mongoose.Schema(
     monthlyTargets: {
       type: [monthlyTargetSubSchema],
       default: [],
+    },
+    attendance: {
+      type: attendanceSummarySubSchema,
+      default: () => ({}),
+    },
+    monthlyBudgetAllocation: {
+      type: Number,
+      min: 0,
+      default: 85000,
     },
   },
   {

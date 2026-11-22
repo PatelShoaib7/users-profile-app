@@ -12,6 +12,13 @@ export const fetchDashboardStats = createAsyncThunk(
   }
 );
 
+const initialDrilldown = {
+  open: false,
+  section: 'employees', // 'employees' | 'attendance' | 'targets' | 'tasks' | 'budget'
+  filter: 'all',
+  department: '',
+};
+
 const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState: {
@@ -19,8 +26,27 @@ const dashboardSlice = createSlice({
     loading: false,
     refreshing: false,
     error: null,
+    drilldown: initialDrilldown,
   },
-  reducers: {},
+  reducers: {
+    openDashboardDrilldown: (state, action) => {
+      state.drilldown = {
+        open: true,
+        section: action.payload?.section || 'employees',
+        filter: action.payload?.filter || 'all',
+        department: action.payload?.department || '',
+      };
+    },
+    updateDashboardDrilldown: (state, action) => {
+      state.drilldown = {
+        ...state.drilldown,
+        ...action.payload,
+      };
+    },
+    closeDashboardDrilldown: (state) => {
+      state.drilldown = initialDrilldown;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchDashboardStats.pending, (state) => {
@@ -43,5 +69,11 @@ const dashboardSlice = createSlice({
       });
   },
 });
+
+export const {
+  openDashboardDrilldown,
+  updateDashboardDrilldown,
+  closeDashboardDrilldown,
+} = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

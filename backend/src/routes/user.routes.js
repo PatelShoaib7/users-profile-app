@@ -13,6 +13,7 @@ const {
   removeTrainingFromUser,
   addTargetToUser,
   removeTargetFromUser,
+  logUserAttendance,
 } = require('../controllers/user.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 const { uploadAvatar } = require('../middleware/upload.middleware');
@@ -27,6 +28,7 @@ const {
   assignTaskSchema,
   assignTrainingSchema,
   assignTargetSchema,
+  logAttendanceSchema,
 } = require('../validators/portal.validator');
 
 const router = express.Router();
@@ -57,5 +59,7 @@ router.delete('/:id/trainings/:trainingId', removeTrainingFromUser);
 
 router.post('/:id/targets', validate(assignTargetSchema), addTargetToUser);
 router.delete('/:id/targets/:targetId', removeTargetFromUser);
+
+router.post('/:id/attendance', validate(logAttendanceSchema), logUserAttendance);
 
 module.exports = router;

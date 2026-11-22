@@ -68,8 +68,19 @@ const assignTargetSchema = Joi.object({
   targetValue: Joi.number().min(1).required(),
   achievedValue: Joi.number().min(0).default(0),
   unit: Joi.string().trim().max(30).default('items'),
-  status: Joi.string().valid('on_track', 'at_risk', 'achieved').default('on_track'),
+  status: Joi.string()
+    .valid('not_started', 'in_progress', 'on_track', 'at_risk', 'achieved')
+    .default('not_started'),
   notes: Joi.string().trim().max(300).allow('').default(''),
+});
+
+const logAttendanceSchema = Joi.object({
+  date: Joi.date().iso().required(),
+  checkIn: Joi.string().trim().max(20).allow('').default('—'),
+  checkOut: Joi.string().trim().max(20).allow('').default('—'),
+  status: Joi.string().valid('present', 'late', 'absent', 'leave').required(),
+  lateByMinutes: Joi.number().integer().min(0).max(480).default(0),
+  remark: Joi.string().trim().max(200).allow('').default(''),
 });
 
 module.exports = {
@@ -80,4 +91,5 @@ module.exports = {
   assignTaskSchema,
   assignTrainingSchema,
   assignTargetSchema,
+  logAttendanceSchema,
 };

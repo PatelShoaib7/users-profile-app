@@ -16,9 +16,82 @@ const SAMPLE_VIDEOS = {
     'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
 };
 
+const buildAttendanceRecord = ({
+  month,
+  presentDays = 20,
+  lateMarks = 1,
+  leaveDays = 1,
+  absentDays = 1,
+  avgCheckInTime = '09:12 AM',
+  lateRemarks = [],
+}) => {
+  const workingDays = presentDays + leaveDays + absentDays;
+  const logs = [
+    {
+      date: '2026-11-21',
+      checkIn: lateMarks >= 1 ? '09:42 AM' : '09:04 AM',
+      checkOut: '06:20 PM',
+      status: lateMarks >= 1 ? 'late' : 'present',
+      lateByMinutes: lateMarks >= 1 ? 27 : 0,
+      remark: lateMarks >= 1 ? lateRemarks[0] || 'Metro signal delay' : 'On time',
+    },
+    {
+      date: '2026-11-20',
+      checkIn: '09:06 AM',
+      checkOut: '06:15 PM',
+      status: 'present',
+      lateByMinutes: 0,
+      remark: 'On time',
+    },
+    {
+      date: '2026-11-19',
+      checkIn: lateMarks >= 2 ? '09:51 AM' : '09:08 AM',
+      checkOut: '06:30 PM',
+      status: lateMarks >= 2 ? 'late' : 'present',
+      lateByMinutes: lateMarks >= 2 ? 36 : 0,
+      remark: lateMarks >= 2 ? lateRemarks[1] || 'Heavy morning traffic' : 'On time',
+    },
+    {
+      date: '2026-11-18',
+      checkIn: leaveDays >= 1 ? '—' : '09:02 AM',
+      checkOut: leaveDays >= 1 ? '—' : '06:10 PM',
+      status: leaveDays >= 1 ? 'leave' : 'present',
+      lateByMinutes: 0,
+      remark: leaveDays >= 1 ? 'Approved casual leave' : 'On time',
+    },
+    {
+      date: '2026-11-17',
+      checkIn: lateMarks >= 3 ? '10:05 AM' : '09:09 AM',
+      checkOut: '06:40 PM',
+      status: lateMarks >= 3 ? 'late' : 'present',
+      lateByMinutes: lateMarks >= 3 ? 50 : 0,
+      remark: lateMarks >= 3 ? lateRemarks[2] || 'Personal appointment' : 'On time',
+    },
+  ];
+
+  return {
+    month,
+    workingDays,
+    presentDays,
+    absentDays,
+    leaveDays,
+    lateMarks,
+    avgCheckInTime,
+    logs,
+  };
+};
+
 const getDefaultStarterPack = () => {
   const currentMonth = getCurrentMonthLabel();
   return {
+    attendance: buildAttendanceRecord({
+      month: currentMonth,
+      presentDays: 20,
+      lateMarks: 1,
+      leaveDays: 1,
+      absentDays: 0,
+      avgCheckInTime: '09:11 AM',
+    }),
     tasks: [
       {
         title: 'Complete personal profile bio, phone & skills tags',
@@ -83,9 +156,9 @@ const getDefaultStarterPack = () => {
         title: 'First Month Sprint Deliverables Completed',
         month: currentMonth,
         targetValue: 4,
-        achievedValue: 1,
+        achievedValue: 0,
         unit: 'tasks',
-        status: 'on_track',
+        status: 'not_started',
         notes: 'Track weekly progress in My Tasks.',
       },
     ],
@@ -108,7 +181,7 @@ const buildSampleUsers = () => {
     );
   }
 
-  return [
+  const baseUsers = [
     {
       fullName: 'Shoaib Patel',
       email: adminEmail,
@@ -347,10 +420,10 @@ const buildSampleUsers = () => {
           title: 'Monthly Learning & Upskilling Hours',
           month: currentMonth,
           targetValue: 12,
-          achievedValue: 8,
+          achievedValue: 0,
           unit: 'hours',
-          status: 'on_track',
-          notes: '4 hours remaining across Design Systems & React courses.',
+          status: 'not_started',
+          notes: 'Scheduled for final week of the month.',
         },
       ],
     },
@@ -667,11 +740,51 @@ const buildSampleUsers = () => {
           targetValue: 12,
           achievedValue: 10,
           unit: 'stories',
-          status: 'on_track',
+          status: 'in_progress',
+        },
+        {
+          title: 'Q1 Stakeholder Sign-off Deck',
+          month: currentMonth,
+          targetValue: 1,
+          achievedValue: 0,
+          unit: 'deck',
+          status: 'not_started',
         },
       ],
     },
   ];
+
+  const attendanceProfiles = [
+    { presentDays: 22, lateMarks: 0, leaveDays: 0, absentDays: 0, avgCheckInTime: '08:58 AM', budget: 165000 },
+    { presentDays: 21, lateMarks: 1, leaveDays: 1, absentDays: 0, avgCheckInTime: '09:09 AM', budget: 115000 },
+    { presentDays: 19, lateMarks: 3, leaveDays: 2, absentDays: 1, avgCheckInTime: '09:26 AM', budget: 135000, remarks: ['Metro line delay', 'Design client call ran late', 'Morning traffic'] },
+    { presentDays: 21, lateMarks: 0, leaveDays: 1, absentDays: 0, avgCheckInTime: '09:02 AM', budget: 175000 },
+    { presentDays: 20, lateMarks: 2, leaveDays: 2, absentDays: 0, avgCheckInTime: '09:19 AM', budget: 155000, remarks: ['Vendor call overlap', 'Cab delay'] },
+    { presentDays: 18, lateMarks: 4, leaveDays: 2, absentDays: 2, avgCheckInTime: '09:38 AM', budget: 105000, remarks: ['Bus breakdown', 'Power outage', 'Weather traffic', 'Doctor visit'] },
+    { presentDays: 20, lateMarks: 2, leaveDays: 1, absentDays: 1, avgCheckInTime: '09:21 AM', budget: 125000 },
+    { presentDays: 21, lateMarks: 1, leaveDays: 1, absentDays: 0, avgCheckInTime: '09:12 AM', budget: 110000 },
+    { presentDays: 16, lateMarks: 2, leaveDays: 4, absentDays: 2, avgCheckInTime: '09:25 AM', budget: 95000 },
+    { presentDays: 19, lateMarks: 3, leaveDays: 2, absentDays: 1, avgCheckInTime: '09:29 AM', budget: 100000, remarks: ['Train delay', 'ISP maintenance', 'Traffic congestion'] },
+    { presentDays: 17, lateMarks: 1, leaveDays: 3, absentDays: 2, avgCheckInTime: '09:15 AM', budget: 90000 },
+    { presentDays: 21, lateMarks: 0, leaveDays: 1, absentDays: 0, avgCheckInTime: '09:03 AM', budget: 115000 },
+  ];
+
+  return baseUsers.map((u, idx) => {
+    const cfg = attendanceProfiles[idx % attendanceProfiles.length];
+    return {
+      ...u,
+      monthlyBudgetAllocation: cfg.budget,
+      attendance: buildAttendanceRecord({
+        month: currentMonth,
+        presentDays: cfg.presentDays,
+        lateMarks: cfg.lateMarks,
+        leaveDays: cfg.leaveDays,
+        absentDays: cfg.absentDays,
+        avgCheckInTime: cfg.avgCheckInTime,
+        lateRemarks: cfg.remarks || [],
+      }),
+    };
+  });
 };
 
 module.exports = {

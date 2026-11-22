@@ -102,12 +102,13 @@ const createUser = asyncHandler(async (req, res) => {
     payload.profileImage = `/uploads/avatars/${req.file.filename}`;
   }
 
-  // Attach default onboarding tasks, training sessions (video + PDF), and monthly targets for new employees/managers
+  // Attach default onboarding tasks, training sessions (video + PDF), monthly targets, and attendance for new employees/managers
   if (['employee', 'manager'].includes(payload.role || 'employee')) {
     const starter = getDefaultStarterPack();
     payload.tasks = payload.tasks || starter.tasks;
     payload.trainings = payload.trainings || starter.trainings;
     payload.monthlyTargets = payload.monthlyTargets || starter.monthlyTargets;
+    payload.attendance = payload.attendance || starter.attendance;
   }
 
   const newUser = await User.create(payload);
@@ -452,7 +453,11 @@ const addTargetToUser = asyncHandler(async (req, res) => {
   if (!user) throw new ApiError(404, 'User profile not found.');
 
   const status =
-    req.body.achievedValue >= req.body.targetValue ? 'achieved' : req.body.status || 'on_track';
+    req.body.achievedValue >= req.body.targetValue
+      ? 'achieved'
+      : req.body.achievedValue > 0
+      ? 'in_progress'
+      : 'not_started';
 
   user.monthlyTargets.unshift({ ...req.body, status });
   await user.save();
@@ -491,6 +496,71 @@ const removeTargetFromUser = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * POST /api/users/:id/attendance
+ * Admin/HR records an attendance or late-mark entry on an employee profile
+ */
+const logUserAttendance = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) throw new ApiError(404, 'User profile not found.');
+
+  if (!user.attendance) {
+    user.attendance = {
+      month: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+      workingDays: 0,
+      presentDays: 0,
+      absentDays: 0,
+      leaveDays: 0,
+      lateMarks: 0,
+      avgCheckInTime: '09:10 AM',
+      logs: [],
+    };
+  }
+
+  const entry = {
+    date: req.body.date,
+    checkIn: req.body.status === 'absent' || req.body.status === 'leave' ? '—' : req.body.checkIn || '09:05 AM',
+    checkOut: req.body.status === 'absent' || req.body.status === 'leave' ? '—' : req.body.checkOut || '06:15 PM',
+    status: req.body.status,
+    lateByMinutes: req.body.status === 'late' ? Math.max(1, req.body.lateByMinutes || 15) : 0,
+    remark: req.body.remark || '',
+  };
+
+  user.attendance.workingDays = (user.attendance.workingDays || 0) + 1;
+  if (entry.status === 'present') {
+    user.attendance.presentDays = (user.attendance.presentDays || 0) + 1;
+  } else if (entry.status === 'late') {
+    user.attendance.presentDays = (user.attendance.presentDays || 0) + 1;
+    user.attendance.lateMarks = (user.attendance.lateMarks || 0) + 1;
+  } else if (entry.status === 'absent') {
+    user.attendance.absentDays = (user.attendance.absentDays || 0) + 1;
+  } else if (entry.status === 'leave') {
+    user.attendance.leaveDays = (user.attendance.leaveDays || 0) + 1;
+  }
+
+  user.attendance.logs.unshift(entry);
+  await user.save();
+
+  await logActivity({
+    action: 'USER_UPDATED',
+    performedBy: req.user._id,
+    targetUser: user,
+    details:
+      entry.status === 'late'
+        ? `Recorded Late Mark (+${entry.lateByMinutes} mins)`
+        : `Logged attendance: ${entry.status}`,
+  });
+
+  res.status(201).json({
+    success: true,
+    message:
+      entry.status === 'late'
+        ? 'Late mark recorded on employee profile'
+        : 'Attendance entry recorded successfully',
+    data: { user },
+  });
+});
+
 module.exports = {
   getUsers,
   getUserById,
@@ -505,4 +575,5 @@ module.exports = {
   removeTrainingFromUser,
   addTargetToUser,
   removeTargetFromUser,
+  logUserAttendance,
 };

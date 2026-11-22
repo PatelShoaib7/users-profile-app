@@ -197,10 +197,12 @@ const updateMyTargetProgress = asyncHandler(async (req, res) => {
   target.achievedValue = req.body.achievedValue;
   if (target.achievedValue >= target.targetValue) {
     target.status = 'achieved';
+  } else if (target.achievedValue <= 0) {
+    target.status = 'not_started';
   } else if (req.body.status) {
     target.status = req.body.status;
   } else {
-    target.status = 'on_track';
+    target.status = 'in_progress';
   }
 
   await user.save();

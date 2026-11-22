@@ -77,3 +77,8 @@ export const removeTargetRequest = async ({ userId, targetId }) => {
   const { data } = await axiosClient.delete(`/users/${userId}/targets/${targetId}`);
   return data;
 };
+
+export const logAttendanceRequest = async ({ userId, entry }) => {
+  const { data } = await axiosClient.post(`/users/${userId}/attendance`, entry);
+  return data;
+};

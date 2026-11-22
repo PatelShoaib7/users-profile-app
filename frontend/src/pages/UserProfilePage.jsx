@@ -33,6 +33,7 @@ import { UserAvatar } from '../components/common/UserAvatar';
 import { RoleBadge, StatusBadge } from '../components/common/StatusBadge';
 import { ProfileCompletionBar } from '../components/common/ProfileCompletionBar';
 import { UserFormModal } from '../components/users/UserFormModal';
+import { UserAttendancePanel } from '../components/users/UserAttendancePanel';
 import { UserAssignmentsPanel } from '../components/users/UserAssignmentsPanel';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { ACTIVITY_ACTION_META } from '../utils/constants';
@@ -250,6 +251,9 @@ export const UserProfilePage = () => {
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          {/* Monthly Attendance Statistics & Late Marks */}
+          <UserAttendancePanel user={user} />
+
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
             <div>
               <h3 className="text-base font-semibold text-slate-900">About &amp; Bio</h3>

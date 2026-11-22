@@ -7,6 +7,7 @@ import {
   deleteUserRequest,
   fetchUserByIdRequest,
   fetchUsersRequest,
+  logAttendanceRequest,
   removeTargetRequest,
   removeTaskRequest,
   removeTrainingRequest,
@@ -147,6 +148,20 @@ export const removeUserItem = createAsyncThunk(
       else if (kind === 'training') res = await removeTrainingRequest({ userId, trainingId: itemId });
       else res = await removeTargetRequest({ userId, targetId: itemId });
       dispatch(addToast({ type: 'info', message: res.message }));
+      return res.data.user;
+    } catch (error) {
+      dispatch(addToast({ type: 'error', message: error.message }));
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const logUserAttendance = createAsyncThunk(
+  'users/logUserAttendance',
+  async ({ userId, entry }, { dispatch, rejectWithValue }) => {
+    try {
+      const res = await logAttendanceRequest({ userId, entry });
+      dispatch(addToast({ type: 'success', message: res.message }));
       return res.data.user;
     } catch (error) {
       dispatch(addToast({ type: 'error', message: error.message }));
@@ -308,6 +323,16 @@ const userSlice = createSlice({
       })
       .addCase(removeUserItem.fulfilled, (state, action) => {
         state.selectedUser = action.payload;
+      })
+      .addCase(logUserAttendance.pending, (state) => {
+        state.submitting = true;
+      })
+      .addCase(logUserAttendance.fulfilled, (state, action) => {
+        state.submitting = false;
+        state.selectedUser = action.payload;
+      })
+      .addCase(logUserAttendance.rejected, (state) => {
+        state.submitting = false;
       });
   },
 });

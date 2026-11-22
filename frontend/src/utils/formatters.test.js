@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  formatCompactINR,
+  formatINR,
   getInitials,
   getYoutubeEmbedUrl,
   resolveAvatarUrl,
@@ -62,4 +64,10 @@ test('calculateUserWorkspaceProgress computes overallPct and 4 pillar breakdowns
   assert.equal(progress.pillars.trainings.pct, 75);
   assert.equal(progress.pillars.targets.pct, 100);
   assert.equal(progress.overallPct, 76);
+});
+
+test('formatINR and formatCompactINR format currency values cleanly', () => {
+  assert.equal(formatCompactINR(2150000), '₹21.50L');
+  assert.equal(formatCompactINR(85000), '₹85.0K');
+  assert.ok(formatINR(650000).startsWith('₹'));
 });
