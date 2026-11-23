@@ -20,6 +20,15 @@ const getPublicKey = (_req, res) => {
     data: {
       publicKey: getPublicKeyPem(),
       algorithm: 'RSA-OAEP-256',
+      ...(env.nodeEnv !== 'production'
+        ? {
+            demoEmails: {
+              admin: env.seed.adminEmail,
+              hr: env.seed.hrEmail,
+              user: env.seed.userEmail,
+            },
+          }
+        : {}),
     },
   });
 };

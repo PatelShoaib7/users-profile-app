@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { clearAuthError, demoLoginUser, loginUser } from '../store/slices/authSlice';
 import { isAdminOrHrRole } from '../components/auth/ProtectedRoute';
 import { clientEnv } from '../config/env';
+import axiosClient from '../api/axiosClient';
 import { ButtonSpinner } from '../components/loaders/Spinner';
 
 export const LoginPage = () => {
@@ -12,9 +13,41 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const { user, token, loading, error } = useAppSelector((state) => state.auth);
 
-  const [email, setEmail] = useState('');
-  // Uncontrolled ref prevents React from writing `value="..."` onto the <input> DOM attribute in DevTools Elements
+  const [roleEmails, setRoleEmails] = useState({
+    admin: clientEnv.demoAdminEmail || '',
+    hr: clientEnv.demoHrEmail || '',
+    user: clientEnv.demoUserEmail || '',
+  });
+
+  const [email, setEmail] = useState(clientEnv.demoAdminEmail || '');
+  // Uncontrolled ref keeps password out of the <input value="..."> DOM attribute in DevTools Elements
   const passwordInputRef = useRef(null);
+
+  // Sync default email from backend /auth/public-key if frontend .env wasn't reloaded yet
+  useEffect(() => {
+    let active = true;
+    axiosClient
+      .get('/auth/public-key')
+      .then(({ data }) => {
+        if (!active) return;
+        const serverEmails = data?.data?.demoEmails;
+        if (serverEmails) {
+          setRoleEmails((prev) => ({
+            admin: serverEmails.admin || prev.admin,
+            hr: serverEmails.hr || prev.hr,
+            user: serverEmails.user || prev.user,
+          }));
+          setEmail((current) => current || serverEmails.admin || '');
+        }
+      })
+      .catch(() => {
+        // Handled on form submission if backend is offline
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (token && user) {
@@ -40,6 +73,9 @@ export const LoginPage = () => {
 
   const handleQuickRoleSignIn = (role) => {
     dispatch(clearAuthError());
+    if (roleEmails[role]) {
+      setEmail(roleEmails[role]);
+    }
     if (passwordInputRef.current) {
       passwordInputRef.current.value = '';
     }
@@ -123,7 +159,7 @@ export const LoginPage = () => {
             <div className="mt-6 pt-5 border-t border-slate-200">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 mb-2.5">
                 <FiShield className="h-3.5 w-3.5 text-brand-600" />
-                Instant Role Preview (Server-Issued Session — Zero Client Passwords)
+                Instant Role Preview (Zero Client Passwords)
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
@@ -133,7 +169,9 @@ export const LoginPage = () => {
                   className="px-2.5 py-2 text-xs font-medium rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-left cursor-pointer"
                 >
                   <span className="block font-semibold text-indigo-700">Admin UI</span>
-                  <span className="text-[11px] text-slate-500">Sign in as Admin</span>
+                  <span className="text-[11px] text-slate-500 truncate block">
+                    {roleEmails.admin || 'Sign in as Admin'}
+                  </span>
                 </button>
 
                 <button
@@ -143,7 +181,9 @@ export const LoginPage = () => {
                   className="px-2.5 py-2 text-xs font-medium rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-left cursor-pointer"
                 >
                   <span className="block font-semibold text-brand-700">HR UI</span>
-                  <span className="text-[11px] text-slate-500">Sign in as HR</span>
+                  <span className="text-[11px] text-slate-500 truncate block">
+                    {roleEmails.hr || 'Sign in as HR'}
+                  </span>
                 </button>
 
                 <button
@@ -153,7 +193,9 @@ export const LoginPage = () => {
                   className="px-2.5 py-2 text-xs font-medium rounded-lg border border-teal-300 bg-teal-50/40 text-slate-700 hover:bg-teal-50 text-left cursor-pointer"
                 >
                   <span className="block font-semibold text-teal-700">User UI</span>
-                  <span className="text-[11px] text-slate-500">Sign in as Employee</span>
+                  <span className="text-[11px] text-slate-500 truncate block">
+                    {roleEmails.user || 'Sign in as Employee'}
+                  </span>
                 </button>
               </div>
             </div>

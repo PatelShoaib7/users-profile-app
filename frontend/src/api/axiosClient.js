@@ -35,10 +35,12 @@ axiosClient.interceptors.response.use(
       localStorage.removeItem(STORAGE_USER_KEY);
     }
 
-    const message =
-      error.response?.data?.message ||
-      error.message ||
-      'Unable to reach backend server. Please verify the backend API is running.';
+    const isNetworkDown = error.code === 'ERR_NETWORK' || !error.response;
+    const message = isNetworkDown
+      ? 'Cannot connect to Backend API (port 5000). Please make sure the backend server is running (`npm run start` from root or `cd backend && npm run dev`).'
+      : error.response?.data?.message ||
+        error.message ||
+        'Unable to process request.';
 
     const normalizedError = new Error(message);
     normalizedError.status = status;

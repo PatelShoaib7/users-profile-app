@@ -37,7 +37,7 @@ test('resolveMaterialViewUrl and resolveMaterialDownloadUrl build valid PDF view
   );
   assert.equal(
     resolveMaterialDownloadUrl('/materials/design-systems-handbook.pdf', 'Guide.pdf'),
-    '/materials/design-systems-handbook.pdf/download?name=Guide.pdf'
+    '/api/materials/design-systems-handbook.pdf/download?name=Guide.pdf'
   );
 });
 
