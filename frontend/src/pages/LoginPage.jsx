@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiLock, FiMail, FiShield } from 'react-icons/fi';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { clearAuthError, loginUser } from '../store/slices/authSlice';
+import { clearAuthError, demoLoginUser, loginUser } from '../store/slices/authSlice';
 import { isAdminOrHrRole } from '../components/auth/ProtectedRoute';
 import { clientEnv } from '../config/env';
 import { ButtonSpinner } from '../components/loaders/Spinner';
@@ -12,12 +12,9 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const { user, token, loading, error } = useAppSelector((state) => state.auth);
 
-  const [email, setEmail] = useState(clientEnv.demoAdminEmail || '');
-  const [password, setPassword] = useState(clientEnv.demoAdminPassword || '');
-
-  const hasDemoAdmin = Boolean(clientEnv.demoAdminEmail && clientEnv.demoAdminPassword);
-  const hasDemoHr = Boolean(clientEnv.demoHrEmail && clientEnv.demoHrPassword);
-  const hasDemoUser = Boolean(clientEnv.demoUserEmail && clientEnv.demoUserPassword);
+  const [email, setEmail] = useState('');
+  // Uncontrolled ref prevents React from writing `value="..."` onto the <input> DOM attribute in DevTools Elements
+  const passwordInputRef = useRef(null);
 
   useEffect(() => {
     if (token && user) {
@@ -34,21 +31,19 @@ export const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    const rawPassword = passwordInputRef.current?.value || '';
+    if (passwordInputRef.current) {
+      passwordInputRef.current.value = '';
+    }
+    dispatch(loginUser({ email: email.trim(), password: rawPassword }));
   };
 
-  const fillDemo = (role) => {
+  const handleQuickRoleSignIn = (role) => {
     dispatch(clearAuthError());
-    if (role === 'admin') {
-      setEmail(clientEnv.demoAdminEmail);
-      setPassword(clientEnv.demoAdminPassword);
-    } else if (role === 'hr') {
-      setEmail(clientEnv.demoHrEmail);
-      setPassword(clientEnv.demoHrPassword);
-    } else {
-      setEmail(clientEnv.demoUserEmail);
-      setPassword(clientEnv.demoUserPassword);
+    if (passwordInputRef.current) {
+      passwordInputRef.current.value = '';
     }
+    dispatch(demoLoginUser(role));
   };
 
   return (
@@ -83,6 +78,7 @@ export const LoginPage = () => {
                 <input
                   type="email"
                   required
+                  autoComplete="username"
                   disabled={loading}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -99,15 +95,19 @@ export const LoginPage = () => {
               <div className="relative">
                 <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
                 <input
+                  ref={passwordInputRef}
                   type="password"
                   required
+                  minLength={6}
+                  autoComplete="current-password"
                   disabled={loading}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-slate-50"
                 />
               </div>
+              <p className="mt-1 text-[11px] text-slate-400">
+                Protected with RSA-OAEP-256 transport encryption before transmission.
+              </p>
             </div>
 
             <button
@@ -119,46 +119,42 @@ export const LoginPage = () => {
             </button>
           </form>
 
-          {(hasDemoAdmin || hasDemoHr || hasDemoUser) && (
+          {clientEnv.enableDemoLogin && (
             <div className="mt-6 pt-5 border-t border-slate-200">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 mb-2.5">
                 <FiShield className="h-3.5 w-3.5 text-brand-600" />
-                Switch Role UI Preview (loaded from .env)
+                Instant Role Preview (Server-Issued Session — Zero Client Passwords)
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {hasDemoAdmin && (
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => fillDemo('admin')}
-                    className="px-2.5 py-2 text-xs font-medium rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-left"
-                  >
-                    <span className="block font-semibold text-indigo-700">Admin UI</span>
-                    <span className="text-[11px] text-slate-500">Full Console</span>
-                  </button>
-                )}
-                {hasDemoHr && (
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => fillDemo('hr')}
-                    className="px-2.5 py-2 text-xs font-medium rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-left"
-                  >
-                    <span className="block font-semibold text-brand-700">HR UI</span>
-                    <span className="text-[11px] text-slate-500">Directory &amp; Goals</span>
-                  </button>
-                )}
-                {hasDemoUser && (
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => fillDemo('user')}
-                    className="px-2.5 py-2 text-xs font-medium rounded-lg border border-teal-300 bg-teal-50/40 text-slate-700 hover:bg-teal-50 text-left"
-                  >
-                    <span className="block font-semibold text-teal-700">User UI</span>
-                    <span className="text-[11px] text-slate-500">Tasks &amp; Targets</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleQuickRoleSignIn('admin')}
+                  className="px-2.5 py-2 text-xs font-medium rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-left cursor-pointer"
+                >
+                  <span className="block font-semibold text-indigo-700">Admin UI</span>
+                  <span className="text-[11px] text-slate-500">Sign in as Admin</span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleQuickRoleSignIn('hr')}
+                  className="px-2.5 py-2 text-xs font-medium rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-left cursor-pointer"
+                >
+                  <span className="block font-semibold text-brand-700">HR UI</span>
+                  <span className="text-[11px] text-slate-500">Sign in as HR</span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleQuickRoleSignIn('user')}
+                  className="px-2.5 py-2 text-xs font-medium rounded-lg border border-teal-300 bg-teal-50/40 text-slate-700 hover:bg-teal-50 text-left cursor-pointer"
+                >
+                  <span className="block font-semibold text-teal-700">User UI</span>
+                  <span className="text-[11px] text-slate-500">Sign in as Employee</span>
+                </button>
               </div>
             </div>
           )}

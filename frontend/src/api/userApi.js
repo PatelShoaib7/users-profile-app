@@ -1,4 +1,23 @@
 import axiosClient from './axiosClient';
+import { encryptPasswordForTransport } from '../utils/passwordCrypto';
+
+const encryptPayloadPassword = async (payload) => {
+  if (payload instanceof FormData) {
+    const rawPass = payload.get('password');
+    if (rawPass && String(rawPass).trim()) {
+      const cipher = await encryptPasswordForTransport(String(rawPass).trim());
+      payload.set('password', cipher);
+    }
+    return payload;
+  }
+
+  if (payload && typeof payload === 'object' && payload.password) {
+    const cipher = await encryptPasswordForTransport(payload.password);
+    return { ...payload, password: cipher };
+  }
+
+  return payload;
+};
 
 export const fetchUsersRequest = async (params) => {
   const cleanParams = Object.fromEntries(
@@ -14,16 +33,18 @@ export const fetchUserByIdRequest = async (id) => {
 };
 
 export const createUserRequest = async (formDataOrPayload) => {
-  const isFormData = formDataOrPayload instanceof FormData;
-  const { data } = await axiosClient.post('/users', formDataOrPayload, {
+  const prepared = await encryptPayloadPassword(formDataOrPayload);
+  const isFormData = prepared instanceof FormData;
+  const { data } = await axiosClient.post('/users', prepared, {
     headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
   });
   return data;
 };
 
 export const updateUserRequest = async ({ id, payload }) => {
-  const isFormData = payload instanceof FormData;
-  const { data } = await axiosClient.put(`/users/${id}`, payload, {
+  const prepared = await encryptPayloadPassword(payload);
+  const isFormData = prepared instanceof FormData;
+  const { data } = await axiosClient.put(`/users/${id}`, prepared, {
     headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
   });
   return data;

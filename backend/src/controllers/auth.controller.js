@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const { User } = require('../models/User');
+const { getPublicKeyPem } = require('../utils/passwordCipher');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 
@@ -10,8 +11,22 @@ const signToken = (user) =>
   });
 
 /**
+ * GET /api/auth/public-key
+ * Returns RSA-OAEP-SHA256 SPKI public key so frontend can encrypt passwords before transit
+ */
+const getPublicKey = (_req, res) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      publicKey: getPublicKeyPem(),
+      algorithm: 'RSA-OAEP-256',
+    },
+  });
+};
+
+/**
  * POST /api/auth/login
- * Authenticate active user (Admin/HR -> Admin Console, Employee/Manager -> User Portal)
+ * Authenticate active user (password arrives RSA-OAEP encrypted from client)
  */
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -41,6 +56,43 @@ const login = asyncHandler(async (req, res) => {
 });
 
 /**
+ * POST /api/auth/demo-login
+ * Development-only role switcher so demo accounts can be previewed WITHOUT sending or storing passwords in frontend
+ */
+const demoRoleLogin = asyncHandler(async (req, res) => {
+  if (env.nodeEnv === 'production') {
+    throw new ApiError(403, 'Demo quick-login is disabled in production.');
+  }
+
+  const requestedRole = req.body?.role || 'admin';
+  let targetEmail = env.seed.adminEmail;
+  if (requestedRole === 'hr') targetEmail = env.seed.hrEmail;
+  else if (requestedRole === 'user') targetEmail = env.seed.userEmail;
+
+  const user = targetEmail
+    ? await User.findOne({ email: targetEmail, status: 'active' })
+    : await User.findOne({
+        role: requestedRole === 'user' ? 'employee' : requestedRole,
+        status: 'active',
+      });
+
+  if (!user) {
+    throw new ApiError(404, `No active demo account found for role '${requestedRole}'.`);
+  }
+
+  const token = signToken(user);
+
+  res.status(200).json({
+    success: true,
+    message: `Signed in as demo ${user.role}`,
+    data: {
+      token,
+      user: user.toJSON(),
+    },
+  });
+});
+
+/**
  * GET /api/auth/me
  * Return currently authenticated user profile
  */
@@ -54,6 +106,8 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  getPublicKey,
   login,
+  demoRoleLogin,
   getMe,
 };

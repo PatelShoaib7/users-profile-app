@@ -1,4 +1,5 @@
 import axiosClient from './axiosClient';
+import { encryptPasswordForTransport } from '../utils/passwordCrypto';
 
 export const fetchMyPortalRequest = async () => {
   const { data } = await axiosClient.get('/portal/me');
@@ -6,7 +7,11 @@ export const fetchMyPortalRequest = async () => {
 };
 
 export const updateMyProfileRequest = async (payload) => {
-  const { data } = await axiosClient.put('/portal/profile', payload);
+  const prepared = { ...payload };
+  if (prepared.password) {
+    prepared.password = await encryptPasswordForTransport(prepared.password);
+  }
+  const { data } = await axiosClient.put('/portal/profile', prepared);
   return data;
 };
 

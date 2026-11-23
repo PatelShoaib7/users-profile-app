@@ -18,6 +18,7 @@ const {
 const { protect, authorize } = require('../middleware/auth.middleware');
 const { uploadAvatar } = require('../middleware/upload.middleware');
 const validate = require('../middleware/validate.middleware');
+const { decryptPasswordMiddleware } = require('../utils/passwordCipher');
 const {
   createUserSchema,
   updateUserSchema,
@@ -39,12 +40,12 @@ router.use(protect, authorize('admin', 'hr'));
 router
   .route('/')
   .get(validate(listUsersQuerySchema, 'query'), getUsers)
-  .post(uploadAvatar.single('avatar'), validate(createUserSchema), createUser);
+  .post(uploadAvatar.single('avatar'), decryptPasswordMiddleware, validate(createUserSchema), createUser);
 
 router
   .route('/:id')
   .get(getUserById)
-  .put(uploadAvatar.single('avatar'), validate(updateUserSchema), updateUser)
+  .put(uploadAvatar.single('avatar'), decryptPasswordMiddleware, validate(updateUserSchema), updateUser)
   .delete(authorize('admin'), deleteUser);
 
 router.patch('/:id/status', validate(updateStatusSchema), updateUserStatus);

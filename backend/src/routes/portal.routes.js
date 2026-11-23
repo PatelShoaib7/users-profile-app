@@ -10,6 +10,7 @@ const {
 const { protect } = require('../middleware/auth.middleware');
 const { uploadAvatar } = require('../middleware/upload.middleware');
 const validate = require('../middleware/validate.middleware');
+const { decryptPasswordMiddleware } = require('../utils/passwordCipher');
 const {
   updateOwnProfileSchema,
   updateTaskStatusSchema,
@@ -23,7 +24,7 @@ const router = express.Router();
 router.use(protect);
 
 router.get('/me', getMyPortalData);
-router.put('/profile', validate(updateOwnProfileSchema), updateMyProfile);
+router.put('/profile', decryptPasswordMiddleware, validate(updateOwnProfileSchema), updateMyProfile);
 router.post('/avatar', uploadAvatar.single('avatar'), uploadMyAvatar);
 router.patch('/tasks/:taskId', validate(updateTaskStatusSchema), updateMyTaskStatus);
 router.patch('/trainings/:trainingId', validate(updateTrainingProgressSchema), updateMyTrainingProgress);

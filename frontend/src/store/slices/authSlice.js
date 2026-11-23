@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getMeRequest, loginRequest } from '../../api/authApi';
+import { demoLoginRequest, getMeRequest, loginRequest } from '../../api/authApi';
 import { STORAGE_TOKEN_KEY, STORAGE_USER_KEY } from '../../api/axiosClient';
 
 const storedToken = localStorage.getItem(STORAGE_TOKEN_KEY);
@@ -16,6 +16,20 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const result = await loginRequest(credentials);
+      localStorage.setItem(STORAGE_TOKEN_KEY, result.token);
+      localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(result.user));
+      return result;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const demoLoginUser = createAsyncThunk(
+  'auth/demoLoginUser',
+  async (role, { rejectWithValue }) => {
+    try {
+      const result = await demoLoginRequest(role);
       localStorage.setItem(STORAGE_TOKEN_KEY, result.token);
       localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(result.user));
       return result;
@@ -85,6 +99,19 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Login failed';
+      })
+      .addCase(demoLoginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(demoLoginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload.token;
+        state.user = action.payload.user;
+      })
+      .addCase(demoLoginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Demo sign-in failed';
       })
       .addCase(verifySession.pending, (state) => {
         state.initializing = true;

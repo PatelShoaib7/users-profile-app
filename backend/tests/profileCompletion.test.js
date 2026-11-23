@@ -6,11 +6,47 @@ const request = require('supertest');
 const app = require('../src/app');
 const env = require('../src/config/env');
 const { evaluateProfileCompletion } = require('../src/services/profileCompletion');
+const {
+  CIPHER_PREFIX,
+  getPublicKeyPem,
+  encryptPasswordServerSide,
+  decryptPasswordValue,
+} = require('../src/utils/passwordCipher');
 
 test('env loader reads required configuration from .env files without hardcoded secrets', () => {
   assert.ok(env.jwtSecret.length >= 16);
   assert.ok(env.mongoUri.startsWith('mongodb://') || env.mongoUri.startsWith('mongodb+srv://'));
   assert.equal(env.nodeEnv, 'test');
+});
+
+test('RSA-OAEP-256 password cipher encrypts plaintext into non-readable ciphertext and decrypts accurately', async () => {
+  const secretPass = 'MySuperSecret@2026!';
+  const cipherText = encryptPasswordServerSide(secretPass);
+  assert.ok(cipherText.startsWith(CIPHER_PREFIX));
+  assert.ok(!cipherText.includes(secretPass));
+  assert.equal(decryptPasswordValue(cipherText), secretPass);
+
+  // Verify W3C WebCrypto subtle.encrypt compatibility (same flow used by browser)
+  const pem = getPublicKeyPem();
+  const b64 = pem
+    .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+    .replace(/-----END PUBLIC KEY-----/g, '')
+    .replace(/\s+/g, '');
+  const spkiBuf = Buffer.from(b64, 'base64');
+  const webKey = await globalThis.crypto.subtle.importKey(
+    'spki',
+    spkiBuf,
+    { name: 'RSA-OAEP', hash: 'SHA-256' },
+    false,
+    ['encrypt']
+  );
+  const browserEncrypted = await globalThis.crypto.subtle.encrypt(
+    { name: 'RSA-OAEP' },
+    webKey,
+    new TextEncoder().encode(secretPass)
+  );
+  const wirePayload = `${CIPHER_PREFIX}${Buffer.from(browserEncrypted).toString('base64')}`;
+  assert.equal(decryptPasswordValue(wirePayload), secretPass);
 });
 
 test('evaluateProfileCompletion returns 100% and empty missingFields for complete profile', () => {

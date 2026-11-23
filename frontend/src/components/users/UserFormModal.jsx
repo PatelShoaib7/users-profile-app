@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FiUpload, FiX } from 'react-icons/fi';
 import { DEPARTMENTS, ROLES, STATUSES } from '../../utils/constants';
 import { resolveAvatarUrl, toDateInputValue } from '../../utils/formatters';
@@ -32,6 +32,7 @@ export const UserFormModal = ({
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState('');
   const [localError, setLocalError] = useState('');
+  const passwordInputRef = useRef(null);
 
   useEffect(() => {
     if (!open) return;
@@ -58,6 +59,9 @@ export const UserFormModal = ({
 
     setAvatarFile(null);
     setLocalError('');
+    if (passwordInputRef.current) {
+      passwordInputRef.current.value = '';
+    }
   }, [open, mode, initialUser]);
 
   if (!open) return null;
@@ -93,7 +97,8 @@ export const UserFormModal = ({
       setLocalError('Please enter a valid email address.');
       return;
     }
-    if (mode === 'create' && form.password && form.password.length < 6) {
+    const enteredPassword = (passwordInputRef.current?.value || '').trim();
+    if (enteredPassword && enteredPassword.length < 6) {
       setLocalError('Password must be at least 6 characters.');
       return;
     }
@@ -106,8 +111,8 @@ export const UserFormModal = ({
     const formData = new FormData();
     formData.append('fullName', form.fullName.trim());
     formData.append('email', form.email.trim());
-    if (form.password.trim()) {
-      formData.append('password', form.password.trim());
+    if (enteredPassword) {
+      formData.append('password', enteredPassword);
     }
     formData.append('phone', form.phone.trim());
     formData.append('department', form.department);
@@ -219,10 +224,9 @@ export const UserFormModal = ({
                 {mode === 'create' ? 'Initial Password (optional)' : 'New Password (optional)'}
               </label>
               <input
+                ref={passwordInputRef}
                 type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
+                autoComplete="new-password"
                 placeholder={mode === 'create' ? 'Uses default onboarding password if blank' : 'Leave blank to keep current'}
                 className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />

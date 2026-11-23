@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import { ButtonSpinner } from '../loaders/Spinner';
 
@@ -11,6 +11,7 @@ export const SelfProfileEditModal = ({ open, user, submitting, onClose, onSubmit
     password: '',
   });
   const [localError, setLocalError] = useState('');
+  const passwordInputRef = useRef(null);
 
   useEffect(() => {
     if (!open || !user) return;
@@ -22,6 +23,9 @@ export const SelfProfileEditModal = ({ open, user, submitting, onClose, onSubmit
       password: '',
     });
     setLocalError('');
+    if (passwordInputRef.current) {
+      passwordInputRef.current.value = '';
+    }
   }, [open, user]);
 
   if (!open || !user) return null;
@@ -37,7 +41,8 @@ export const SelfProfileEditModal = ({ open, user, submitting, onClose, onSubmit
       setLocalError('Full name must be at least 2 characters.');
       return;
     }
-    if (form.password && form.password.length < 6) {
+    const enteredPassword = (passwordInputRef.current?.value || '').trim();
+    if (enteredPassword && enteredPassword.length < 6) {
       setLocalError('New password must be at least 6 characters.');
       return;
     }
@@ -52,7 +57,7 @@ export const SelfProfileEditModal = ({ open, user, submitting, onClose, onSubmit
       phone: form.phone.trim(),
       bio: form.bio.trim(),
       skills,
-      ...(form.password.trim() ? { password: form.password.trim() } : {}),
+      ...(enteredPassword ? { password: enteredPassword } : {}),
     };
 
     onSubmit(payload);
@@ -141,10 +146,9 @@ export const SelfProfileEditModal = ({ open, user, submitting, onClose, onSubmit
               Change Password (optional)
             </label>
             <input
+              ref={passwordInputRef}
               type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
+              autoComplete="new-password"
               placeholder="Leave blank to keep existing password"
               className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-600"
             />
