@@ -1,0 +1,97 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 1403 >>
+stream
+0.06 0.29 0.36 rg
+40 725 532 75 re f
+BT
+/F2 18 Tf
+1 1 1 rg
+56 768 Td (Agile Delivery & Effective Team Collaboration) Tj
+ET
+BT
+/F1 11 Tf
+0.82 0.95 0.94 rg
+56 746 Td (Sprint Execution, Goal Tracking & Constructive Code Reviews) Tj
+ET
+BT
+/F2 9 Tf
+0.30 0.35 0.42 rg
+42 702 Td (Category: Leadership & Soft Skills   |   Duration: 5 Hours   |   Module Code: LD-105) Tj
+ET
+0.82 0.85 0.90 RG
+1 w
+40 692 m 572 692 l S
+BT
+/F2 12 Tf
+0.06 0.29 0.36 rg
+42 666 Td (1. Monthly Goal & Sprint Alignment) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 648 Td (- Break monthly KPI targets into measurable weekly sprint deliverables.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 633 Td (- Flag blockers early and update task statuses transparently in your workspace.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 618 Td (- Balance feature delivery with dedicated monthly upskilling and technical debt time.) Tj
+ET
+BT
+/F2 12 Tf
+0.06 0.29 0.36 rg
+42 593 Td (2. High-Signal Communication Habits) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 575 Td (- Write concise pull request descriptions explaining context, trade-offs, and test steps.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 560 Td (- Focus code reviews on correctness, security, readability, and maintainability.) Tj
+ET
+0.82 0.85 0.90 RG
+40 52 m 572 52 l S
+BT
+/F1 8.5 Tf
+0.45 0.50 0.56 rg
+42 36 Td (PeoplePulse Internal Learning Academy  |  Official Training Session Reference Material) Tj
+ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+1851
+%%EOF

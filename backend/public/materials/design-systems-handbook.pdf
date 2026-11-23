@@ -1,0 +1,122 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 2058 >>
+stream
+0.06 0.29 0.36 rg
+40 725 532 75 re f
+BT
+/F2 18 Tf
+1 1 1 rg
+56 768 Td (Design Systems Architecture at Scale) Tj
+ET
+BT
+/F1 11 Tf
+0.82 0.95 0.94 rg
+56 746 Td (Component Tokens, Accessibility Standards & Cross-Team Handoff) Tj
+ET
+BT
+/F2 9 Tf
+0.30 0.35 0.42 rg
+42 702 Td (Category: Technical & UI Engineering   |   Duration: 8 Hours   |   Module Code: DS-204) Tj
+ET
+0.82 0.85 0.90 RG
+1 w
+40 692 m 572 692 l S
+BT
+/F2 12 Tf
+0.06 0.29 0.36 rg
+42 666 Td (1. Core Design Token Hierarchy) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 648 Td (- Primitive Tokens: Base color palettes, spacing scale \(4px grid\), and typography ramps.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 633 Td (- Semantic Tokens: Role-based aliases such as surface-primary, text-muted, and status-success.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 618 Td (- Component Tokens: Scoped overrides for buttons, form controls, badges, and modal dialogs.) Tj
+ET
+BT
+/F2 12 Tf
+0.06 0.29 0.36 rg
+42 593 Td (2. Accessibility & WCAG 2.1 AA Checklist) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 575 Td (- Maintain a minimum 4.5:1 contrast ratio for body copy and interactive status pills.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 560 Td (- Ensure full keyboard navigation \(Tab, Shift+Tab, Escape\) across modals and dropdowns.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 545 Td (- Always pair color indicators with clear text labels or iconography.) Tj
+ET
+BT
+/F2 12 Tf
+0.06 0.29 0.36 rg
+42 520 Td (3. Practical Engineering Handoff Takeaways) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 502 Td (- Document empty states, shimmer loading skeletons, error states, and responsive breakpoints.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 487 Td (- Align Figma component props directly with React component prop interfaces.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 472 Td (- Review UI regressions during sprint demos before marking design tickets complete.) Tj
+ET
+0.82 0.85 0.90 RG
+40 52 m 572 52 l S
+BT
+/F1 8.5 Tf
+0.45 0.50 0.56 rg
+42 36 Td (PeoplePulse Internal Learning Academy  |  Official Training Session Reference Material) Tj
+ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2506
+%%EOF

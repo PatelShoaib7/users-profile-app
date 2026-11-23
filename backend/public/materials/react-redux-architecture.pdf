@@ -1,0 +1,117 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 1885 >>
+stream
+0.06 0.29 0.36 rg
+40 725 532 75 re f
+BT
+/F2 18 Tf
+1 1 1 rg
+56 768 Td (Modern React 18 & Redux Toolkit Guide) Tj
+ET
+BT
+/F1 11 Tf
+0.82 0.95 0.94 rg
+56 746 Td (Async Thunks, Normalized State Slices & Loading UX Patterns) Tj
+ET
+BT
+/F2 9 Tf
+0.30 0.35 0.42 rg
+42 702 Td (Category: Frontend Engineering   |   Duration: 7 Hours   |   Module Code: FE-301) Tj
+ET
+0.82 0.85 0.90 RG
+1 w
+40 692 m 572 692 l S
+BT
+/F2 12 Tf
+0.06 0.29 0.36 rg
+42 666 Td (1. Structuring Feature Slices Cleanly) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 648 Td (- Separate domain slices: authSlice, userSlice, dashboardSlice, activitySlice, portalSlice.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 633 Td (- Use createAsyncThunk for API calls and handle pending, fulfilled, and rejected states.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 618 Td (- Centralize toast notifications and global request counters inside uiSlice.) Tj
+ET
+BT
+/F2 12 Tf
+0.06 0.29 0.36 rg
+42 593 Td (2. Resilient API Integration & Interceptors) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 575 Td (- Configure a single Axios client reading VITE_API_URL from environment variables.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 560 Td (- Attach JWT Bearer headers automatically via request interceptors.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 545 Td (- Gracefully clear expired sessions on 401 responses without losing user context.) Tj
+ET
+BT
+/F2 12 Tf
+0.06 0.29 0.36 rg
+42 520 Td (3. Perceived Performance & Loaders) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 502 Td (- Use skeleton shimmer layouts during initial data loads to prevent layout shift.) Tj
+ET
+BT
+/F1 10 Tf
+0.15 0.18 0.24 rg
+52 487 Td (- Debounce search inputs \(350ms\) and display inline row/button spinners on mutations.) Tj
+ET
+0.82 0.85 0.90 RG
+40 52 m 572 52 l S
+BT
+/F1 8.5 Tf
+0.45 0.50 0.56 rg
+42 36 Td (PeoplePulse Internal Learning Academy  |  Official Training Session Reference Material) Tj
+ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2333
+%%EOF
